@@ -10,7 +10,6 @@ import {
     ActivityIndicator,
     Platform,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import { getOrderList } from '../api';
@@ -40,11 +39,13 @@ const OrderEntryReportScreen: React.FC<Props> = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
     const [orders, setOrders] = useState<any[]>([]);
     const [expandedOrders, setExpandedOrders] = useState<Set<string>>(new Set());
+    const [hasSearched, setHasSearched] = useState(false);
 
     const handleSearch = async () => {
         const { fromError, toError } = validateDateRange(fromDate, toDate);
         if (fromError || toError) { Alert.alert('Invalid Date', fromError || toError); return; }
 
+        setHasSearched(true);
         setLoading(true);
         try {
             const apiFrom = formatForApi(fromDate);
@@ -55,17 +56,12 @@ const OrderEntryReportScreen: React.FC<Props> = ({ navigation }) => {
             if (results?.length > 0) {
                 setExpandedOrders(new Set([results[0].id]));
             }
-            if (!results?.length) Alert.alert('No Data', 'No orders found.');
         } catch {
             Alert.alert('Error', 'Failed to fetch order report.');
         } finally {
             setLoading(false);
         }
     };
-
-    React.useEffect(() => {
-        handleSearch();
-    }, []);
 
     // Group items by SO_ID
     const groupedOrders = useMemo(() => {
@@ -90,7 +86,7 @@ const OrderEntryReportScreen: React.FC<Props> = ({ navigation }) => {
         });
     }, [orders]);
 
-    const totalAmount = groupedOrders.reduce((s, g) => s + (parseFloat(g.amount) || 0), 0);
+    const totalAmount = groupedOrders.reduce((s, g) => s + (g.amount || 0), 0);
 
     const toggleOrder = (orderId: string) => {
         setExpandedOrders(prev => {
@@ -129,6 +125,14 @@ const OrderEntryReportScreen: React.FC<Props> = ({ navigation }) => {
                     </View>
                 </View>
 
+                {/* Empty state — only after user has searched */}
+                {hasSearched && !loading && groupedOrders.length === 0 && (
+                    <View style={styles.emptyState}>
+                        <Icon name="inbox" size={48} color="#E2E8F0" />
+                        <Text style={styles.emptyText}>No orders found for this range.</Text>
+                    </View>
+                )}
+
                 {/* Table */}
                 {groupedOrders.length > 0 && (
                     <View style={styles.tableWrap}>
@@ -165,7 +169,7 @@ const OrderEntryReportScreen: React.FC<Props> = ({ navigation }) => {
                                                 {group.orderNo} - {group.items[0]?.group || ''}
                                             </Text>
                                             <Text style={{ fontSize: 13, color: '#475569', fontWeight: '700', marginTop: 3 }}>
-                                                {group.date}  •  <Text style={{ color: '#059669', fontWeight: '900' }}>₹ {formatAmount(parseFloat(group.amount) || 0)}</Text>
+                                                {group.date}  •  <Text style={{ color: '#059669', fontWeight: '900' }}>₹ {formatAmount(group.amount || 0)}</Text>
                                             </Text>
                                         </View>
                                         <View style={[styles.statusChip, {
@@ -250,6 +254,8 @@ const styles = StyleSheet.create({
     searchBtn: { width: 40, height: 40, borderRadius: 10, backgroundColor: '#3861FB', alignItems: 'center', justifyContent: 'center', elevation: 5 },
 
     tableWrap: { backgroundColor: '#fff', borderRadius: 20, overflow: 'hidden', elevation: 4 },
+    emptyState: { alignItems: 'center', justifyContent: 'center', paddingVertical: 60 },
+    emptyText: { color: '#A0AEC0', marginTop: 12, fontWeight: '600', fontSize: 14 },
 
     tableHeader: {
         flexDirection: 'row',

@@ -21,6 +21,8 @@ export interface SessionData {
     pan: string;
     mobile: string;
     branchName: string;
+    accountCount: number;
+    loginData: any;
 }
 
 interface SessionContextValue {
@@ -33,7 +35,7 @@ interface SessionContextValue {
 const DEFAULT_SESSION: SessionData = {
     custId: '',
     branchId: '',
-    userId: '2937', 
+    userId: '2937',
     custName: '',
     custType: 'CM',
     partyMudId: '',
@@ -43,6 +45,8 @@ const DEFAULT_SESSION: SessionData = {
     pan: '',
     mobile: '',
     branchName: '',
+    accountCount: 0,
+    loginData: null,
 };
 
 const SessionContext = createContext<SessionContextValue>({

@@ -117,6 +117,10 @@ android {
         buildConfig = true
         aidl = true
     }
+    aaptOptions {
+        cruncherEnabled = false
+        useNewCruncher = false
+    }
 }
 
 dependencies {

@@ -139,10 +139,15 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                             <Text style={styles.distributorName} numberOfLines={1}>
                                 {session?.custName || 'Loading...'}
                             </Text>
-                            <TouchableOpacity style={styles.switchAccountBtn} onPress={() => navigation.goBack()}>
-                                <Icon name="swap-horiz" size={16} color="#3861FB" />
-                                <Text style={styles.switchAccountText}>SWITCH ACCOUNT</Text>
-                            </TouchableOpacity>
+                            {(session?.accountCount ?? 0) > 1 && (
+                                <TouchableOpacity
+                                    style={styles.switchAccountBtn}
+                                    onPress={() => navigation.navigate('LoginResponse', { data: session?.loginData })}
+                                >
+                                    <Icon name="swap-horiz" size={16} color="#3861FB" />
+                                    <Text style={styles.switchAccountText}>SWITCH ACCOUNT</Text>
+                                </TouchableOpacity>
+                            )}
                         </View>
                     </View>
                     <TouchableOpacity style={styles.profileIconBtn} onPress={() => clearSession().then(() => navigation.replace('Login'))}>

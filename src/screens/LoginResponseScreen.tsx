@@ -83,6 +83,8 @@ const LoginResponseScreen: React.FC<Props> = ({ navigation, route }) => {
             pan:           String(data.pan              ?? ''),
             mobile:        String(data.mobile           ?? ''),
             branchName:    String(branch.CUST_NAME_DISPLAY ?? branch.HUB_NAME ?? 'MAIN BRANCH'),
+            accountCount:  branches.length,
+            loginData:     data,
         });
         navigation.replace('Dashboard');
     };

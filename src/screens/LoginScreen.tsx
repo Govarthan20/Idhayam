@@ -125,7 +125,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         setApiMessage('');
         try {
             const response = await AuthService.generateOtp(pan, mobile);
-            if (pan === 'VVVRM1234S') {
+            if (pan === 'VVVRM1234S' || pan === 'ABCDE1234Z') {
                 setApiMessage(response.message);
             }
             
@@ -301,7 +301,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                                 <Text style={styles.formSectionTitle}>Verify OTP</Text>
                                 <Text style={styles.formSectionSub}>Code sent to your mobile</Text>
                                 
-                                {pan === 'VVVRM1234S' && !!apiMessage && (
+                                {(pan === 'VVVRM1234S' || pan === 'ABCDE1234Z') && !!apiMessage && (
                                     <View style={styles.testOtpBadge}>
                                         <Text style={styles.testOtpText}>OTP: {apiMessage}</Text>
                                     </View>
